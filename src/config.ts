@@ -7,8 +7,8 @@ export const HEIGHT = 1920;
 export const DURATION_S = 26;
 
 export const BRAND = {
-  name: 'DEIN FENSTERBAU', // <- Firmenname
-  handle: '@deinfensterbau', // <- Instagram/TikTok-Name
+  name: 'MASSFENSTER NRW', // <- Firmenname
+  handle: '@massfensternrw', // <- Instagram/TikTok-Name
   accent: '#ff7a1a',
   cool: '#5ab8ff',
 };
