@@ -1,6 +1,7 @@
 import React from 'react';
 import {Composition} from 'remotion';
 import {Flyer} from './Flyer';
+import {Kampagne} from './Kampagne';
 import {DURATION_S, FPS, HEIGHT, WIDTH} from './config';
 import {FensterAd, FensterAdProps} from './FensterAd';
 
@@ -26,5 +27,7 @@ export const RemotionRoot: React.FC = () => (
         <Composition id={`Flyer-Post-${lang}`} component={Flyer} durationInFrames={DURATION_S * FPS} fps={FPS} width={1080} height={1350} defaultProps={{lang}} />
       </React.Fragment>
     ))}
+    {/* Winter-Kampagne Instagram/Facebook 1080 × 1350 */}
+    <Composition id="Kampagne-Winter-de" component={Kampagne} durationInFrames={1} fps={FPS} width={1080} height={1350} />
   </>
 );
