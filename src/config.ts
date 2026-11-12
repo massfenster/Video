@@ -142,8 +142,8 @@ export const PROMO = {
   de: {
     kicker: 'WINTER-AKTION',
     pct: '−35\u00a0%',
-    on: 'auf alle Fenster',
-    validity: 'Aktion gültig bis 01.12.2026. Details im persönlichen Angebot.',
+    on: 'nur auf Fenster',
+    validity: 'Rabatt gilt nur für Fenster. Aktion gültig bis 01.12.2026. Details im persönlichen Angebot.',
     until: 'bis 01.12.2026',
     bullets: [
       'Kostenloses Aufmaß & Angebot',
@@ -156,8 +156,8 @@ export const PROMO = {
   tr: {
     kicker: 'KIŞ KAMPANYASI',
     pct: '−%35',
-    on: 'tüm pencerelerde',
-    validity: 'Kampanya 01.12.2026’ya kadar geçerlidir. Detaylar kişisel teklifte.',
+    on: 'yalnızca pencerelerde',
+    validity: 'İndirim yalnızca pencereler için geçerlidir. Kampanya 01.12.2026’ya kadar geçerlidir. Detaylar kişisel teklifte.',
     until: '01.12.2026’ya kadar',
     bullets: [
       'Ücretsiz ölçüm ve teklif',
