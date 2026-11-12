@@ -17,13 +17,13 @@ DUR = 26.0
 # (Startzeit s, spätestes Ende s, Text) – Zeiten passend zu src/config.ts
 SCRIPT = {
     'de': [
-        (0.25, 2.5, 'Was, wenn du Wärme sehen könntest?'),
-        (2.9, 5.5, 'So sieht dein Haus im Winter aus.'),
-        (5.8, 9.1, 'Alte Fenster. Die Wärme geht direkt raus.'),
-        (9.4, 13.6, 'Ein Winter. Zweitausendfünfhundert Kilowattstunden. Weg.'),
-        (14.0, 16.6, 'Dann: neue Fenster.'),
-        (16.9, 20.5, 'Die Wärme bleibt drin. Bis zu siebzig Prozent weniger Verlust.'),
-        (21.0, 24.5, 'Kostenloses Aufmaß und Angebot. Schreib uns jetzt.'),
+        (0.3, 2.9, 'Was, wenn du Wärme sehen könntest?'),
+        (3.4, 5.9, 'So sieht dein Haus im Winter aus.'),
+        (6.3, 9.8, 'Alte Fenster. Die Wärme entweicht an den Rändern.'),
+        (10.2, 14.5, 'Ein Winter: rund dreitausendfünfhundert Kilowattstunden, nur über die Fenster.'),
+        (14.6, 17.2, 'Dann: neue Fenster.'),
+        (17.4, 21.2, 'Die Wärme bleibt drin: rund siebzig Prozent weniger Verlust über die Fenster.'),
+        (21.3, 25.0, 'Kostenloses Aufmaß und Angebot. Schreib uns jetzt.'),
     ],
 }[LANG]
 

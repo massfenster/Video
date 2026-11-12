@@ -1,6 +1,11 @@
-"""Synthetisiert Musikbett + Soundeffekte rein per Code (numpy) -> public/audio/bed.wav
+"""Ruhiges Sounddesign rein per Code (numpy) -> public/audio/bed.wav
 
-Timings kommen aus src/config.ts (hier gespiegelt). Keine Samples, keine Lizenzen.
+- leiser Nachtwind + weiches Pad (vor dem Tausch Moll, danach Dur)
+- Lichtübergang ins Wärmebild: weiches Anschwellen
+- Wärmeverlust: leises Luftrauschen, folgt der Stärke des Lecks
+- Fenstertausch: kurzer, satter "Einsetz"-Ton
+- CTA: sanfte Glocke, danach ruhiger Ausklang
+Timings spiegeln src/config.ts (T).
 """
 import os
 import wave
@@ -9,28 +14,23 @@ import numpy as np
 
 SR = 44100
 DUR = 26.0
-T = dict(thermal=2.6, leak=5.6, tl_start=9.2, tl_end=13.6, swap=13.8, cta=20.6)
+T = dict(thermal=3.0, leak=6.0, winter=10.0, full=13.2, swap=14.3, cta=21.0, loop=25.2)
 
 n = int(SR * DUR)
 t = np.arange(n) / SR
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(11)
 out = np.zeros((n, 2))
 
 
-def env(start, attack, hold, release):
-    e = np.zeros(n)
-    a0, a1 = int(start * SR), int((start + attack) * SR)
-    h1 = int((start + attack + hold) * SR)
-    r1 = int((start + attack + hold + release) * SR)
-    e[a0:a1] = np.linspace(0, 1, a1 - a0)
-    e[a1:h1] = 1
-    e[h1:min(r1, n)] = np.linspace(1, 0, r1 - h1)[: min(r1, n) - h1]
-    return e
+def ramp(points):
+    xs, ys = zip(*points)
+    return np.interp(t, xs, ys)
 
 
-def lowpass(x, cutoff):
-    # einfacher One-Pole-Tiefpass (cutoff darf Array sein)
-    a = np.exp(-2 * np.pi * np.broadcast_to(cutoff, x.shape) / SR)
+def onepole(x, cutoff):
+    """Tiefpass (cutoff skalar oder Array) – vektorisiert in Blöcken."""
+    cut = np.broadcast_to(np.asarray(cutoff, dtype=float), x.shape)
+    a = np.exp(-2 * np.pi * cut / SR)
     y = np.empty_like(x)
     acc = 0.0
     for i in range(len(x)):
@@ -40,76 +40,69 @@ def lowpass(x, cutoff):
 
 
 def add(sig, gain=1.0, pan=0.0):
-    out[:, 0] += sig * gain * (1 - pan) / 2 * 2 ** 0.5
-    out[:, 1] += sig * gain * (1 + pan) / 2 * 2 ** 0.5
+    out[:, 0] += sig * gain * np.sqrt((1 - pan) / 2) * np.sqrt(2)
+    out[:, 1] += sig * gain * np.sqrt((1 + pan) / 2) * np.sqrt(2)
 
 
-# --- 1) Dunkles Pad (Akkord, wechselt nach dem Fenstertausch nach Dur) ---
-def chord(freqs, amp):
+noise_l = rng.standard_normal(n)
+noise_r = rng.standard_normal(n)
+
+# 1) Nachtwind (sehr leise, durchgehend)
+wind_cut = 250 + 120 * np.sin(2 * np.pi * 0.07 * t)
+wind = onepole(noise_l, wind_cut)
+add(wind * 0.5, pan=-0.3)
+add(onepole(noise_r, wind_cut * 0.9) * 0.5, pan=0.3)
+
+# 2) Pad: A-Moll(add9) -> nach dem Tausch C-Dur(add9), weich und leise
+def chord(freqs):
     s = np.zeros(n)
     for k, f in enumerate(freqs):
-        det = 1 + 0.002 * np.sin(2 * np.pi * 0.1 * t + k)
-        s += np.sin(2 * np.pi * f * det * t) + 0.3 * np.sin(2 * np.pi * 2 * f * t + k)
-    return s * amp
+        det = 1 + 0.0015 * np.sin(2 * np.pi * (0.08 + k * 0.01) * t + k)
+        s += np.sin(2 * np.pi * f * det * t) * (0.6 if f > 300 else 1.0)
+    return s
 
 
-minor = chord([55.0, 110.0, 130.81, 164.81], 0.06)  # A-Moll
-major = chord([65.41, 130.81, 164.81, 196.0], 0.06)  # C-Dur
-x_swap = np.clip((t - T['swap']) / 1.2, 0, 1)
-pad = minor * (1 - x_swap) + major * x_swap
-pad *= np.clip(t / 2.0, 0, 1) * (0.55 + 0.45 * np.clip((t - T['thermal']) / 2, 0, 1))
-pad *= np.clip((DUR - t) / 1.0, 0, 1)
-add(pad, 1.0)
+minor = chord([110.0, 164.81, 220.0, 246.94, 261.63])
+major = chord([130.81, 196.0, 261.63, 293.66, 329.63])
+x = np.clip((t - T['swap']) / 1.5, 0, 1)
+pad = (minor * (1 - x) + major * x) * 0.02
+pad *= ramp([(0, 0.5), (2.5, 0.7), (T['thermal'], 1.0), (T['cta'], 1.0), (DUR, 0.75)])
+add(pad)
 
-# --- 2) Puls/Beat ab dem Wärmeleck, schneller im Zeitraffer ---
-bpm = np.where((t > T['tl_start']) & (t < T['tl_end']), 150, 100)
-phase = np.cumsum(bpm / 60 / SR)
-beat_env = np.exp(-(phase % 1) * 14)
-kick = np.sin(2 * np.pi * 50 * t + 6 * beat_env) * beat_env
-gate = ((t > T['leak']) & (t < T['swap'])) | (t > T['swap'] + 1.0) & (t < T['cta'] + 4.5)
-add(kick * gate * 0.35)
+# 3) Lichtübergang: weiches Anschwellen (gefiltertes Rauschen + tiefer Ton)
+sw = ramp([(T['thermal'] - 0.6, 0), (T['thermal'] + 0.2, 1), (T['thermal'] + 1.4, 0)])
+add(onepole(noise_r, 300 + 1500 * sw) * sw * 0.9)
+add(np.sin(2 * np.pi * 73.4 * t) * sw * 0.08)
 
-# Ticken (Uhr) im Zeitraffer
-tick_phase = np.cumsum(np.where(t > T['tl_start'], 6 + (t - T['tl_start']) * 3, 0) / SR)
-tick = rng.standard_normal(n) * np.exp(-(tick_phase % 1) * 60)
-tick *= ((t > T['tl_start']) & (t < T['tl_end'])).astype(float)
-add(tick * 0.05, pan=0.3)
+# 4) Wärmeverlust: leises Luftrauschen (Bandpass ~ 700–2500 Hz), folgt dem Leck
+leak = ramp([(T['leak'], 0), (T['leak'] + 1.0, 0.7), (T['winter'], 0.8), (T['full'], 1.0),
+             (T['swap'], 1.0), (T['swap'] + 0.5, 0)])
+flutter = 0.75 + 0.25 * np.sin(2 * np.pi * 0.9 * t) * np.sin(2 * np.pi * 0.37 * t)
+air = onepole(noise_l, 2500) - onepole(noise_l, 700)
+add(air * leak * flutter * 0.55, pan=0.15)
 
-# --- 3) Whoosh beim Umschalten auf Wärmebild + Riser vor dem Fenstertausch ---
-noise = rng.standard_normal(n)
-w1 = env(T['thermal'] - 0.6, 0.6, 0.0, 0.8)
-add(lowpass(noise, 200 + 4000 * w1) * w1 * 0.35, pan=-0.2)
-riser = env(T['tl_end'] - 2.5, 2.5, 0.0, 0.05)
-add(lowpass(noise, 300 + 6000 * riser) * riser * 0.25, pan=0.2)
-add(np.sin(2 * np.pi * (200 + 600 * riser) * t) * riser * 0.05)
+# 5) Fenster setzen: kurzer, satter Ton – tiefer Puls + kurzer Anschlag
+d = np.clip(t - T['swap'], 0, None)
+on = (t >= T['swap']).astype(float)
+thump = np.sin(2 * np.pi * (58 + 40 * np.exp(-d * 30)) * d) * np.exp(-d * 11) * on
+knock = (onepole(noise_r, 1400) - onepole(noise_r, 300)) * np.exp(-d * 55) * on
+add(thump * 0.55 + knock * 1.1)
+# leise, kurze Rastgeräusche der weiteren Fenster
+for i in range(1, 8):
+    at = T['swap'] + i * 0.035
+    dd = np.clip(t - at, 0, None)
+    click = np.sin(2 * np.pi * 1200 * dd) * np.exp(-dd * 140) * (t >= at)
+    add(click * 0.025, pan=(i / 7 - 0.5) * 0.6)
 
-# --- 4) Impacts ---
-def impact(at, gain):
-    d = np.clip(t - at, 0, None)
-    on = (t >= at).astype(float)
-    boom = np.sin(2 * np.pi * (40 + 80 * np.exp(-d * 20)) * d) * np.exp(-d * 3) * on
-    crack = noise * np.exp(-d * 30) * on
-    add((boom * 0.9 + crack * 0.25) * gain)
-
-
-impact(T['thermal'], 0.6)
-impact(T['swap'], 0.9)
-
-# --- 5) "Klick" der neuen Fenster (8 kurze Klicks) ---
-for i in range(8):
-    at = T['swap'] + i * 0.07 + 0.15
-    d = np.clip(t - at, 0, None)
-    click = np.sin(2 * np.pi * 2400 * d) * np.exp(-d * 120) * (t >= at)
-    add(click * 0.18, pan=(i / 7 - 0.5))
-
-# --- 6) Glocke beim CTA ---
+# 6) CTA: sanfte Glocke
 d = np.clip(t - T['cta'], 0, None)
-bell = sum(np.sin(2 * np.pi * f * d) * np.exp(-d * k) for f, k in [(784, 2.2), (1568, 3.5), (2352, 5)])
-add(bell * (t >= T['cta']) * 0.12)
+bell = sum(np.sin(2 * np.pi * f * d) * np.exp(-d * k) * g for f, k, g in [(523.25, 1.6, 1), (1046.5, 2.8, 0.35), (1569.8, 4.0, 0.15)])
+add(bell * (t >= T['cta']) * 0.05)
 
-# --- Mastern ---
+# Mastern: weich ein-/ausblenden, damit der Loop nahtlos ist
+out *= ramp([(0, 0.0), (0.4, 1.0), (DUR - 0.5, 1.0), (DUR, 0.0)])[:, None]
 out /= np.max(np.abs(out)) + 1e-9
-out *= 0.89
+out *= 0.7
 os.makedirs('public/audio', exist_ok=True)
 with wave.open('public/audio/bed.wav', 'wb') as f:
     f.setnchannels(2)

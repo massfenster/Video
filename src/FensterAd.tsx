@@ -11,22 +11,25 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import {BRAND, CALC, Lang, T, TEXT} from './config';
+import {BRAND, CALC, Lang, PAL, T, TEXT} from './config';
 import {HouseScene} from './scene/House';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
-const SANS = 'Inter, "Inter Display", system-ui, sans-serif';
-const MONO = '"JetBrains Mono", "DejaVu Sans Mono", monospace';
+// Eine Schriftfamilie, zwei Schnitte: 500 und 700
+const FONT = 'Inter, system-ui, sans-serif';
+const W_REG = 500;
+const W_BOLD = 700;
+const SHADOW = '0 2px 18px rgba(8,14,26,0.85), 0 0 2px rgba(8,14,26,0.9)';
 
-const fadeWindow = (s: number, from: number, to: number, f = 0.25) =>
+const fadeWindow = (s: number, from: number, to: number, f = 0.3) =>
   interpolate(s, [from, from + f, to - f, to], [0, 1, 1, 0], clamp);
 
-// ---------- Zähler ----------
-const kwhAt = (s: number) => {
+// Zähler: Wärmeverlust über die Fenster (alte Fenster) über einen Winter
+const lossAt = (s: number) => {
   if (s < T.leakStart) return 0;
-  if (s < T.timelapseStart)
-    return interpolate(s, [T.leakStart, T.timelapseStart], [0, 140], clamp);
-  return interpolate(s, [T.timelapseStart, T.timelapseEnd], [140, CALC.kwhPerWinter], {
+  if (s < T.winterFast)
+    return interpolate(s, [T.leakStart, T.winterFast], [0, 700], {...clamp, easing: Easing.in(Easing.quad)});
+  return interpolate(s, [T.winterFast, T.counterFull], [700, CALC.lossOld], {
     ...clamp,
     easing: Easing.inOut(Easing.quad),
   });
@@ -41,43 +44,50 @@ export const FensterAd: React.FC<FensterAdProps> = ({lang, voice}) => {
   const tx = TEXT[lang];
   const nf = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'tr-TR', {maximumFractionDigits: 0});
 
-  const thermal = interpolate(s, [T.thermalOn, T.thermalOn + 0.45], [0, 1], clamp);
-  const sealed = s >= T.swap;
-  const cta = interpolate(s, [T.ctaStart, T.ctaStart + 0.6], [0, 1], clamp);
+  const thermal = interpolate(s, [T.thermalOn, T.thermalOn + 0.8], [0, 1], clamp);
+  const ctaOut = 1 - interpolate(s, [T.ctaStart, T.ctaStart + 0.4], [0, 1], clamp);
+  const isNew = s >= T.swap;
+  const showNew = s >= T.newCountFrom - 0.2;
 
-  // Blitze bei den großen Momenten
-  const flash =
-    interpolate(s, [T.thermalOn - 0.05, T.thermalOn, T.thermalOn + 0.35], [0, 0.85, 0], clamp) +
-    interpolate(s, [T.swap - 0.05, T.swap, T.swap + 0.5], [0, 0.9, 0], clamp);
+  // Lichtübergang: ein weiches Lichtband läuft einmal von oben nach unten
+  const sweepP = interpolate(s, [T.thermalOn - 0.1, T.thermalOn + 0.9], [-0.2, 1.2], clamp);
+  const sweepO = fadeWindow(s, T.thermalOn - 0.1, T.thermalOn + 0.9, 0.25);
 
-  // Glitch-Verschiebung beim Umschalten
-  const glitch = interpolate(s, [T.thermalOn - 0.1, T.thermalOn + 0.25], [1, 0], clamp) *
-    (s > T.thermalOn - 0.1 ? 1 : 0);
-
-  const kwh = kwhAt(s);
-  const hudVisible = fadeWindow(s, T.leakStart - 0.1, T.ctaStart + 0.3, 0.3);
+  // Zähler: alt zählt hoch, nach dem Tausch auf den neuen Wert herunter
+  const kwh = isNew
+    ? interpolate(s, [T.newCountFrom, T.newCountTo], [CALC.lossOld, CALC.lossNew], {
+        ...clamp,
+        easing: Easing.inOut(Easing.cubic),
+      })
+    : lossAt(s);
+  const accent = showNew ? BRAND.blue : PAL.amber;
+  const block = fadeWindow(s, T.leakStart - 0.2, T.ctaStart + 0.4, 0.35);
+  const monthP = interpolate(s, [T.leakStart, T.counterFull], [0, 1], clamp);
+  const monthIdx = Math.min(4, Math.floor(monthP * 5));
+  const monthsO = 1 - interpolate(s, [T.swap, T.swap + 0.4], [0, 1], clamp);
+  const savingsIn = spring({frame: frame - Math.round(T.savings * fps), fps, config: {damping: 200}});
 
   return (
-    <AbsoluteFill style={{backgroundColor: '#05040f', fontFamily: SANS}}>
-      {/* 3D-Szene */}
-      <AbsoluteFill style={{transform: `translateX(${Math.sin(frame * 3) * glitch * 18}px)`}}>
-        <ThreeCanvas width={width} height={height} camera={{fov: 42, near: 0.1, far: 200}}>
+    <AbsoluteFill style={{backgroundColor: PAL.night, fontFamily: FONT, color: PAL.text}}>
+      <AbsoluteFill>
+        <ThreeCanvas width={width} height={height} camera={{fov: 42, near: 0.1, far: 220}}>
           <HouseScene />
         </ThreeCanvas>
       </AbsoluteFill>
 
-      {/* Wärmebild-Look: Scanlines + Vignette */}
+      {/* dezente Vignette + ruhige Fläche hinter dem Text oben */}
       <AbsoluteFill
-        style={{
-          opacity: thermal * 0.35,
-          backgroundImage:
-            'repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 2px, transparent 2px, transparent 5px)',
-        }}
+        style={{background: 'radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(8,14,26,0.5) 100%)'}}
       />
       <AbsoluteFill
+        style={{background: 'linear-gradient(180deg, rgba(8,14,26,0.5) 0%, rgba(8,14,26,0) 34%)'}}
+      />
+
+      {/* Lichtübergang ins Wärmebild */}
+      <AbsoluteFill
         style={{
-          background:
-            'radial-gradient(ellipse at 50% 45%, transparent 45%, rgba(0,0,0,0.75) 100%)',
+          opacity: sweepO,
+          background: `linear-gradient(180deg, transparent ${sweepP * 100 - 12}%, rgba(255,225,154,0.16) ${sweepP * 100}%, transparent ${sweepP * 100 + 12}%)`,
         }}
       />
 
@@ -85,155 +95,168 @@ export const FensterAd: React.FC<FensterAdProps> = ({lang, voice}) => {
       <div
         style={{
           position: 'absolute',
-          top: 70,
-          left: 60,
-          right: 60,
+          top: 92,
+          left: 64,
+          right: 64,
           display: 'flex',
           justifyContent: 'space-between',
-          fontFamily: MONO,
-          fontSize: 22,
-          letterSpacing: 4,
-          color: 'rgba(255,255,255,0.55)',
-          opacity: interpolate(s, [0.2, 0.8], [0, 1], clamp) * (1 - cta),
+          fontSize: 24,
+          fontWeight: W_REG,
+          letterSpacing: 2,
+          opacity: interpolate(s, [T.thermalOn, T.thermalOn + 0.6], [0, 1], clamp) * ctaOut,
         }}
       >
-        <span>{tx.hudTop}</span>
-        <span>{BRAND.handle}</span>
+        <span style={{color: PAL.amber}}>● {tx.thermal}</span>
+        <span style={{opacity: 0.7}}>{BRAND.handle}</span>
       </div>
 
-      {/* Wärmebild-Indikator + Temperaturskala */}
+      {/* Temperaturskala: vorher und nachher identisch */}
       <div
         style={{
           position: 'absolute',
-          top: 130,
-          left: 60,
-          fontFamily: MONO,
-          fontSize: 24,
-          letterSpacing: 3,
-          color: '#ff5a3c',
-          opacity: thermal * (1 - cta) * (Math.floor(s * 2) % 2 === 0 ? 1 : 0.55),
-        }}
-      >
-        ● {tx.hudThermal}
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          top: 200,
-          right: 70,
-          height: 420,
+          top: 170,
+          right: 64,
+          height: 360,
           display: 'flex',
-          gap: 14,
-          opacity: thermal * (1 - cta),
-          fontFamily: MONO,
-          fontSize: 20,
-          color: 'rgba(255,255,255,0.7)',
+          gap: 12,
+          opacity: thermal * ctaOut,
+          fontSize: 22,
+          fontWeight: W_REG,
         }}
       >
-        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', textAlign: 'right'}}>
-          <span>22°C</span>
-          <span>8°C</span>
-          <span>-5°C</span>
+        <div
+          style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', textAlign: 'right', opacity: 0.8}}
+        >
+          <span>22 °C</span>
+          <span>8 °C</span>
+          <span>−5 °C</span>
         </div>
         <div
           style={{
-            width: 16,
-            borderRadius: 8,
-            background: 'linear-gradient(#fff3b0, #ff9a3c, #ff3d2e, #7d2bd6, #2b1d7a, #0a0b33)',
+            width: 14,
+            borderRadius: 7,
+            background: `linear-gradient(${PAL.softYellow}, ${PAL.amber} 30%, #6b5fa8 52%, ${PAL.indigo} 72%, ${PAL.deepBlue})`,
           }}
         />
       </div>
 
-      {/* Zähler-Block (wie im Referenzvideo: Label + große Zahl) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 470,
-          left: 60,
-          opacity: hudVisible,
-          borderLeft: `3px solid ${sealed ? BRAND.cool : BRAND.accent}`,
-          padding: '14px 30px 18px 22px',
-          background: 'linear-gradient(90deg, rgba(5,4,15,0.55), rgba(5,4,15,0))',
-        }}
-      >
-        <div style={{fontFamily: MONO, fontSize: 24, letterSpacing: 4, color: sealed ? BRAND.cool : BRAND.accent}}>
-          {sealed ? tx.hudSealed : tx.hudCounter}
+      {/* Fester Zählerbereich */}
+      <div style={{position: 'absolute', top: 170, left: 64, width: 820, opacity: block}}>
+        <div style={{fontSize: 26, fontWeight: W_BOLD, letterSpacing: 2.5, color: accent}}>
+          {showNew ? tx.newLabel : tx.lossLabel}
         </div>
-        <div style={{display: 'flex', alignItems: 'baseline', gap: 14, color: 'white'}}>
-          <span style={{fontFamily: MONO, fontSize: 112, fontWeight: 700, letterSpacing: -2}}>
+        <div style={{display: 'flex', alignItems: 'baseline', gap: 16, marginTop: 8, textShadow: SHADOW}}>
+          <span
+            style={{fontSize: 128, fontWeight: W_BOLD, letterSpacing: -3, fontVariantNumeric: 'tabular-nums', lineHeight: 1}}
+          >
             {nf.format(kwh)}
           </span>
-          <span style={{fontFamily: MONO, fontSize: 40, opacity: 0.8}}>kWh</span>
+          <span style={{fontSize: 44, fontWeight: W_REG}}>kWh</span>
         </div>
-        <div style={{fontFamily: MONO, fontSize: 30, color: 'rgba(255,255,255,0.75)', letterSpacing: 2}}>
-          {sealed ? tx.hudSealedSub : `≈ ${nf.format(kwh * CALC.eurPerKwh)} €`}
+        <div
+          style={{fontSize: 32, fontWeight: W_REG, marginTop: 10, opacity: 0.9, fontVariantNumeric: 'tabular-nums', textShadow: SHADOW}}
+        >
+          ≈ {nf.format(kwh * CALC.eurPerKwh)} € {tx.perWinter}
         </div>
-        {/* Zeitraffer-Leiste */}
-        <div style={{marginTop: 22, opacity: fadeWindow(s, T.timelapseStart, T.timelapseEnd + 0.3, 0.3)}}>
-          <div style={{fontFamily: MONO, fontSize: 20, letterSpacing: 4, color: 'rgba(255,255,255,0.6)'}}>
-            {tx.hudTimelapse}
+
+        {/* Winterverlauf (vor dem Tausch) / Ersparnis (nach dem Tausch) teilen sich denselben Platz */}
+        <div style={{position: 'relative', marginTop: 24, height: 200}}>
+          <div style={{position: 'absolute', inset: 0, opacity: monthsO}}>
+            <div style={{display: 'flex', gap: 22, fontSize: 22, fontWeight: W_REG, letterSpacing: 1.5}}>
+              {tx.months.map((m, i) => (
+                <span key={m} style={{opacity: i <= monthIdx ? 1 : 0.35, color: i === monthIdx ? PAL.amber : PAL.text}}>
+                  {m}
+                </span>
+              ))}
+            </div>
+            <div style={{marginTop: 10, width: 380, height: 4, background: 'rgba(244,246,248,0.18)', borderRadius: 2}}>
+              <div style={{height: 4, borderRadius: 2, background: PAL.amber, width: `${monthP * 100}%`}} />
+            </div>
           </div>
-          <div style={{marginTop: 10, width: 420, height: 6, background: 'rgba(255,255,255,0.15)', borderRadius: 3}}>
-            <div
-              style={{
-                height: 6,
-                borderRadius: 3,
-                background: BRAND.accent,
-                width: `${interpolate(s, [T.timelapseStart, T.timelapseEnd], [0, 100], clamp)}%`,
-              }}
-            />
-          </div>
+          {s >= T.savings - 0.05 && (
+            <div style={{position: 'absolute', inset: 0, opacity: savingsIn, transform: `translateY(${(1 - savingsIn) * 20}px)`}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: 20}}>
+                <span
+                  style={{
+                    fontSize: 64,
+                    fontWeight: W_BOLD,
+                    color: PAL.night,
+                    background: BRAND.blue,
+                    borderRadius: 16,
+                    padding: '2px 18px',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {tx.pct}
+                </span>
+                <span style={{fontSize: 30, fontWeight: W_BOLD, lineHeight: 1.2, whiteSpace: 'pre-line', textShadow: SHADOW}}>
+                  {tx.pctLabel}
+                </span>
+              </div>
+              <div style={{marginTop: 16, fontSize: 28, fontWeight: W_REG, textShadow: SHADOW}}>{tx.savedLine}</div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Hook */}
-      <AbsoluteFill
+      {/* Annahmen: klein, aber lesbar, fester Platz unten */}
+      <div
         style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          opacity: interpolate(s, [0, 0.15, T.hookEnd - 0.3, T.hookEnd], [0, 1, 1, 0], clamp),
+          position: 'absolute',
+          left: 64,
+          right: 64,
+          top: 1505,
+          fontSize: 22,
+          fontWeight: W_REG,
+          lineHeight: 1.45,
+          color: 'rgba(244,246,248,0.75)',
+          textShadow: SHADOW,
+          opacity: block,
         }}
       >
-        <div
-          style={{
-            color: 'white',
-            fontSize: 80,
-            fontWeight: 800,
-            padding: '0 60px',
-            lineHeight: 1.08,
-            textAlign: 'center',
-            whiteSpace: 'pre-line',
-            letterSpacing: -1.5,
-            textShadow: '0 6px 40px rgba(0,0,0,0.8)',
-            transform: `translateY(${-430 + interpolate(s, [0, 0.5], [30, 0], {...clamp, easing: Easing.out(Easing.cubic)})}px) scale(${interpolate(s, [0, 2.6], [1, 1.06])})`,
-          }}
-        >
-          {tx.hook}
-        </div>
-      </AbsoluteFill>
+        {tx.assumption}
+      </div>
 
-      {/* Untertitel */}
+      {/* Eröffnungsfrage: groß, schlicht, mit Luft */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 230,
+          left: 64,
+          right: 64,
+          textAlign: 'center',
+          fontSize: 100,
+          fontWeight: W_BOLD,
+          lineHeight: 1.06,
+          letterSpacing: -2,
+          whiteSpace: 'pre-line',
+          textShadow: SHADOW,
+          opacity: interpolate(s, [T.hookIn, T.hookIn + 0.35, T.hookOut - 0.3, T.hookOut], [0, 1, 1, 0], clamp),
+          transform: `translateY(${interpolate(s, [T.hookIn, T.hookIn + 0.5], [16, 0], {...clamp, easing: Easing.out(Easing.cubic)})}px)`,
+        }}
+      >
+        {tx.hook}
+      </div>
+
+      {/* Untertitel: feste Position unter dem Haus */}
       {tx.lines.map((l, i) => {
-        const o = fadeWindow(s, l.from, l.to, 0.2);
+        const o = fadeWindow(s, l.from, l.to, 0.25);
         if (o <= 0) return null;
-        const pop = spring({frame: frame - Math.round(l.from * fps), fps, config: {damping: 16}});
         return (
           <div
             key={i}
             style={{
               position: 'absolute',
-              left: 70,
-              right: 70,
-              top: 1180,
+              left: 64,
+              right: 64,
+              top: 1335,
               textAlign: 'center',
-              color: 'white',
-              fontSize: 58,
-              fontWeight: 700,
+              fontSize: 56,
+              fontWeight: W_BOLD,
               lineHeight: 1.18,
               whiteSpace: 'pre-line',
               opacity: o,
-              transform: `translateY(${(1 - pop) * 24}px)`,
-              textShadow: '0 4px 24px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)',
+              textShadow: SHADOW,
             }}
           >
             {l.text}
@@ -241,14 +264,9 @@ export const FensterAd: React.FC<FensterAdProps> = ({lang, voice}) => {
         );
       })}
 
-      {/* Blitz */}
-      <AbsoluteFill style={{backgroundColor: 'white', opacity: Math.min(flash, 1), pointerEvents: 'none'}} />
+      {s >= T.ctaStart && <CtaCard lang={lang} />}
 
-      {/* Call-to-Action */}
-      {cta > 0 && <CtaCard lang={lang} />}
-
-      {/* Ton: Musik/SFX (per Code synthetisiert) + optional Sprecher */}
-      <Audio src={staticFile('audio/bed.wav')} volume={voice ? 0.55 : 1} />
+      <Audio src={staticFile('audio/bed.wav')} volume={voice ? 0.5 : 1} />
       {voice && <Audio src={staticFile(`audio/vo_${lang}.mp3`)} />}
     </AbsoluteFill>
   );
@@ -260,108 +278,57 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
   const s = frame / fps;
   const tx = TEXT[lang];
   const local = frame - Math.round(T.ctaStart * fps);
-  const bg = interpolate(s, [T.ctaStart, T.ctaStart + 0.6], [0, 0.82], clamp);
-  const up = (d: number) => spring({frame: local - d, fps, config: {damping: 14}});
-  const pulse = 1 + Math.sin(local / 6) * 0.025;
-  const loop = interpolate(s, [24.6, 25.0], [0, 1], clamp);
+  const up = (d: number) => spring({frame: local - d, fps, config: {damping: 200}});
+  // am Ende alles ausblenden -> das letzte Bild ist das Eröffnungsbild
+  const out = interpolate(s, [T.loopStart, 25.95], [1, 0], {...clamp, easing: Easing.inOut(Easing.sin)});
+  const bg = interpolate(s, [T.ctaStart, T.ctaStart + 0.5], [0, 0.9], clamp) * out;
 
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{backgroundColor: `rgba(5,4,15,${bg})`}} />
+      <AbsoluteFill style={{backgroundColor: `rgba(16,28,48,${bg})`}} />
       <AbsoluteFill
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          paddingBottom: 260,
-          opacity: 1 - loop,
-        }}
+        style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', paddingBottom: 220, opacity: out}}
       >
         <div
           style={{
-            background: 'white',
-            borderRadius: 36,
-            padding: '26px 44px 20px',
-            boxShadow: `0 20px 80px rgba(0,0,0,0.5), 0 0 80px ${BRAND.cool}55`,
+            background: '#ffffff',
+            borderRadius: 32,
+            padding: '24px 42px 18px',
             opacity: up(0),
-            transform: `translateY(${(1 - up(0)) * 40}px) scale(${0.9 + up(0) * 0.1})`,
+            transform: `translateY(${(1 - up(0)) * 20}px)`,
           }}
         >
-          <Img src={staticFile('logo.png')} style={{width: 520, display: 'block'}} />
+          <Img src={staticFile('logo.png')} style={{width: 460, display: 'block'}} />
         </div>
         <div
           style={{
-            marginTop: 56,
-            color: 'white',
+            marginTop: 64,
             fontSize: 96,
-            fontWeight: 800,
-            lineHeight: 1.05,
+            fontWeight: W_BOLD,
+            lineHeight: 1.06,
+            letterSpacing: -2,
             textAlign: 'center',
             whiteSpace: 'pre-line',
-            letterSpacing: -2,
-            opacity: up(4),
-            transform: `translateY(${(1 - up(4)) * 40}px)`,
+            opacity: up(5),
+            transform: `translateY(${(1 - up(5)) * 20}px)`,
           }}
         >
           {tx.ctaTitle}
         </div>
         <div
           style={{
-            marginTop: 30,
-            color: 'rgba(255,255,255,0.8)',
-            fontSize: 40,
-            fontWeight: 500,
-            textAlign: 'center',
-            maxWidth: 860,
-            opacity: up(9),
-          }}
-        >
-          {tx.ctaSub}
-        </div>
-        <div
-          style={{
-            marginTop: 60,
-            padding: '30px 64px',
+            marginTop: 64,
+            padding: '30px 66px',
             borderRadius: 999,
-            background: BRAND.cool,
-            color: 'white',
-            fontSize: 44,
-            fontWeight: 700,
-            textShadow: `0 2px 6px ${BRAND.navy}88`,
-            boxShadow: `0 0 60px ${BRAND.cool}88`,
-            transform: `scale(${up(14) * pulse})`,
+            background: BRAND.blue,
+            color: PAL.night,
+            fontSize: 46,
+            fontWeight: W_BOLD,
+            opacity: up(10),
+            transform: `scale(${0.96 + up(10) * 0.04})`,
           }}
         >
           {tx.ctaButton} →
-        </div>
-      </AbsoluteFill>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          right: 80,
-          bottom: 330,
-          textAlign: 'center',
-          fontFamily: MONO,
-          fontSize: 19,
-          lineHeight: 1.5,
-          color: 'rgba(255,255,255,0.45)',
-          opacity: up(18) * (1 - loop),
-        }}
-      >
-        {tx.footnote}
-      </div>
-      {/* Loop zurück zum Hook */}
-      <AbsoluteFill
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: `rgba(5,4,15,${loop})`,
-          opacity: loop,
-        }}
-      >
-        <div style={{color: 'white', fontSize: 64, fontWeight: 700, textAlign: 'center', padding: '0 80px', transform: 'translateY(-160px)'}}>
-          {tx.loop}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
