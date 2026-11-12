@@ -132,3 +132,34 @@ export const TEXT: Record<
     ctaButton: 'Hemen mesaj yaz',
   },
 };
+
+// ---- Winter-Aktion (Flyer) – Bedingungen hier anpassen ----
+export const PROMO = {
+  pct: 35,
+  de: {
+    kicker: 'WINTER-AKTION',
+    pct: '−35\u00a0%',
+    on: 'auf alle Fenster',
+    validity: 'Aktion gültig bis 31.01.2027. Details im persönlichen Angebot.',
+    bullets: [
+      'Kostenloses Aufmaß & Angebot',
+      'Rund 70 % weniger Wärmeverlust über die Fenster*',
+      `Neue Fenster mit Uw ${String(CALC.uNew).replace('.', ',')} W/m²K`,
+    ],
+    button: 'Jetzt Termin sichern',
+    qr: 'Scannen &\nNachricht schreiben',
+  },
+  tr: {
+    kicker: 'KIŞ KAMPANYASI',
+    pct: '−%35',
+    on: 'tüm pencerelerde',
+    validity: 'Kampanya 31.01.2027’ye kadar geçerlidir. Detaylar kişisel teklifte.',
+    bullets: [
+      'Ücretsiz ölçüm ve teklif',
+      'Pencerelerden ısı kaybında yaklaşık %70 azalma*',
+      `Uw ${String(CALC.uNew).replace('.', ',')} W/m²K değerli yeni pencereler`,
+    ],
+    button: 'Hemen randevu al',
+    qr: 'Tara ve\nmesaj yaz',
+  },
+};

@@ -22,6 +22,7 @@
     "@remotion/cli": "^4.0.543",
     "@remotion/google-fonts": "^4.0.543",
     "@remotion/three": "^4.0.543",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remotion": "^4.0.543",
