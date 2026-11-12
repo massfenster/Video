@@ -85,7 +85,7 @@ export const TEXT: Record<
     lines: [
       {from: 2.8, to: 5.5, text: 'Evin kışın\nböyle görünüyor.'},
       {from: 5.7, to: 9.1, text: 'Eski pencereler.\nIsı doğrudan dışarı kaçıyor.'},
-      {from: 9.3, to: 13.5, text: 'Bir kış.\n2.500 kWh’den fazla. Boşa gidiyor.'},
+      {from: 9.3, to: 13.5, text: 'Bir kış.\n2.500 kWh’den fazlası boşa.'},
       {from: 13.8, to: 16.6, text: 'Sonra: yeni pencereler.'},
       {from: 16.8, to: 20.4, text: 'Isı içeride kalıyor.\n%70’e kadar daha az kayıp.'},
     ],
