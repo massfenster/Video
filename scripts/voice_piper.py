@@ -1,8 +1,9 @@
-"""Offline-Sprecher mit Piper (Thorsten-Stimme, CC0 -> kommerziell nutzbar).
+"""Offline-Sprecher mit Piper (Thorsten high, CC0 -> kommerziell nutzbar).
 
-Nutzung:  python3 scripts/voice_piper.py de [/pfad/zu/de-thorsten-low.onnx]
+Nutzung:  python3 scripts/voice_piper.py de [/pfad/zu/de_DE-thorsten-high.onnx]
 Erzeugt public/audio/vo_de.mp3, jede Zeile exakt auf die Untertitel-Startzeit gelegt.
-Modell: https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-thorsten-low.tar.gz
+Modell: https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-de-thorsten-low.tar.gz (Fallback)
+Besser (22 kHz): https://huggingface.co/rhasspy/piper-voices/tree/main/de/de_DE/thorsten/high
 """
 import os
 import subprocess
@@ -10,7 +11,7 @@ import sys
 import tempfile
 
 LANG = sys.argv[1] if len(sys.argv) > 1 else 'de'
-MODEL = sys.argv[2] if len(sys.argv) > 2 else os.path.expanduser('~/voices/de-thorsten-low.onnx')
+MODEL = sys.argv[2] if len(sys.argv) > 2 else os.path.expanduser('~/voices/de_DE-thorsten-high.onnx')
 DUR = 26.0
 
 # (Startzeit s, spätestes Ende s, Text) – Zeiten passend zu src/config.ts
