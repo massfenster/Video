@@ -7,10 +7,11 @@ export const HEIGHT = 1920;
 export const DURATION_S = 26;
 
 export const BRAND = {
-  name: 'MASSFENSTER NRW', // <- Firmenname
+  name: 'MassFensterNRW', // <- Firmenname
   handle: '@massfensternrw', // <- Instagram/TikTok-Name
   accent: '#ff7a1a',
-  cool: '#5ab8ff',
+  cool: '#31b2e8', // Logo-Hellblau
+  navy: '#26437f', // Logo-Dunkelblau
 };
 
 // Beispielrechnung (ehrlich & nachvollziehbar, wird im Video als Fußnote gezeigt):

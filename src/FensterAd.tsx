@@ -4,6 +4,7 @@ import {
   AbsoluteFill,
   Audio,
   Easing,
+  Img,
   interpolate,
   spring,
   staticFile,
@@ -278,19 +279,19 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
       >
         <div
           style={{
-            fontFamily: MONO,
-            fontSize: 30,
-            letterSpacing: 8,
-            color: BRAND.cool,
+            background: 'white',
+            borderRadius: 36,
+            padding: '26px 44px 20px',
+            boxShadow: `0 20px 80px rgba(0,0,0,0.5), 0 0 80px ${BRAND.cool}55`,
             opacity: up(0),
-            transform: `translateY(${(1 - up(0)) * 30}px)`,
+            transform: `translateY(${(1 - up(0)) * 40}px) scale(${0.9 + up(0) * 0.1})`,
           }}
         >
-          {BRAND.name}
+          <Img src={staticFile('logo.png')} style={{width: 520, display: 'block'}} />
         </div>
         <div
           style={{
-            marginTop: 30,
+            marginTop: 56,
             color: 'white',
             fontSize: 96,
             fontWeight: 800,
@@ -322,11 +323,12 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
             marginTop: 60,
             padding: '30px 64px',
             borderRadius: 999,
-            background: BRAND.accent,
+            background: BRAND.cool,
             color: 'white',
             fontSize: 44,
             fontWeight: 700,
-            boxShadow: `0 0 60px ${BRAND.accent}88`,
+            textShadow: `0 2px 6px ${BRAND.navy}88`,
+            boxShadow: `0 0 60px ${BRAND.cool}88`,
             transform: `scale(${up(14) * pulse})`,
           }}
         >
