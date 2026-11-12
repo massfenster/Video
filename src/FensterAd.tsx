@@ -11,7 +11,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import {BRAND, CALC, Lang, PAL, T, TEXT} from './config';
+import {BRAND, CALC, Lang, PAL, PROMO, T, TEXT} from './config';
 import {HouseScene} from './scene/House';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -287,7 +287,7 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
     <AbsoluteFill>
       <AbsoluteFill style={{backgroundColor: `rgba(16,28,48,${bg})`}} />
       <AbsoluteFill
-        style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', paddingBottom: 220, opacity: out}}
+        style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', paddingBottom: 160, opacity: out}}
       >
         <div
           style={{
@@ -300,9 +300,41 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
         >
           <Img src={staticFile('logo.png')} style={{width: 460, display: 'block'}} />
         </div>
+        {/* Winter-Aktion */}
         <div
           style={{
-            marginTop: 64,
+            marginTop: 48,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 20,
+            opacity: up(3),
+            transform: `translateY(${(1 - up(3)) * 20}px)`,
+          }}
+        >
+          <span
+            style={{
+              background: PAL.amber,
+              color: PAL.night,
+              fontSize: 64,
+              fontWeight: W_BOLD,
+              borderRadius: 18,
+              padding: '4px 22px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {PROMO[lang].pct}
+          </span>
+          <span style={{fontSize: 34, fontWeight: W_BOLD, lineHeight: 1.2}}>
+            {PROMO[lang].kicker}
+            <br />
+            <span style={{fontWeight: W_REG}}>
+              {PROMO[lang].on} · {PROMO[lang].until}
+            </span>
+          </span>
+        </div>
+        <div
+          style={{
+            marginTop: 52,
             fontSize: 96,
             fontWeight: W_BOLD,
             lineHeight: 1.06,
@@ -317,7 +349,7 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
         </div>
         <div
           style={{
-            marginTop: 64,
+            marginTop: 56,
             padding: '30px 66px',
             borderRadius: 999,
             background: BRAND.blue,
