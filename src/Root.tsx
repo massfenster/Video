@@ -14,7 +14,7 @@ export const RemotionRoot: React.FC = () => (
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
-        defaultProps={{lang, voice: false}}
+        defaultProps={{lang, voice: lang === 'de'}}
       />
     ))}
   </>
