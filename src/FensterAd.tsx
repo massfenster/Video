@@ -362,6 +362,11 @@ const CtaCard: React.FC<{lang: Lang}> = ({lang}) => {
         >
           {tx.ctaButton} →
         </div>
+        <div style={{marginTop: 34, fontSize: 34, fontWeight: W_REG, opacity: up(14), textAlign: 'center', lineHeight: 1.5}}>
+          <span style={{fontWeight: W_BOLD}}>{BRAND.phone}</span>
+          <br />
+          {BRAND.email}
+        </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );

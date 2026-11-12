@@ -20,7 +20,7 @@ export const Flyer: React.FC<{lang: Lang}> = ({lang}) => {
   return (
     <AbsoluteFill style={{backgroundColor: PAL.night, fontFamily: FONT, color: PAL.text}}>
       {/* Szene etwas tiefer setzen, damit das Haus zwischen Aktion und Fakten steht */}
-      <div style={{position: 'absolute', left: 0, top: height * (height / width > 1.3 ? 0.035 : 0.0), width, height}}>
+      <div style={{position: 'absolute', left: 0, top: height * (height / width > 1.3 ? 0.0 : -0.04), width, height}}>
         <ThreeCanvas width={width} height={height} camera={{fov: height / width > 1.3 ? 60 : 72, near: 0.1, far: 220}}>
           <HouseScene />
         </ThreeCanvas>
@@ -47,10 +47,10 @@ export const Flyer: React.FC<{lang: Lang}> = ({lang}) => {
         </div>
 
         {/* Aktion */}
-        <div style={{marginTop: 54 * u, textShadow: SHADOW}}>
+        <div style={{marginTop: (tall ? 54 : 36) * u, textShadow: SHADOW}}>
           <div style={{fontSize: 46 * u, fontWeight: 700, letterSpacing: 6 * u, color: PAL.softYellow}}>{p.kicker}</div>
           <div style={{display: 'flex', alignItems: tall ? 'baseline' : 'center', gap: 28 * u, flexWrap: tall ? 'wrap' : 'nowrap'}}>
-            <span style={{fontSize: (height / width > 1.3 ? 250 : 210) * u, fontWeight: 700, letterSpacing: -10 * u, lineHeight: 1, color: PAL.amber, whiteSpace: 'nowrap'}}>
+            <span style={{fontSize: (height / width > 1.3 ? 250 : 180) * u, fontWeight: 700, letterSpacing: -10 * u, lineHeight: 1, color: PAL.amber, whiteSpace: 'nowrap'}}>
               {p.pct}
             </span>
             <span style={{fontSize: (tall ? 62 : 54) * u, fontWeight: 700, lineHeight: 1.1, maxWidth: tall ? undefined : 300 * u}}>{p.on}</span>
@@ -63,7 +63,7 @@ export const Flyer: React.FC<{lang: Lang}> = ({lang}) => {
         {/* Fakten + CTA */}
         <div style={{display: 'flex', gap: 40 * u, alignItems: 'flex-end'}}>
           <div style={{flex: 1}}>
-            {p.bullets.map((b) => (
+            {(tall ? p.bullets : p.bullets.slice(0, 2)).map((b) => (
               <div key={b} style={{display: 'flex', gap: 18 * u, alignItems: 'baseline', fontSize: 36 * u, fontWeight: 500, lineHeight: 1.3, marginBottom: 16 * u}}>
                 <span style={{color: BRAND.blue, fontWeight: 700}}>✓</span>
                 <span>{b}</span>
@@ -94,8 +94,32 @@ export const Flyer: React.FC<{lang: Lang}> = ({lang}) => {
           </div>
         </div>
 
+        {/* Kontakt */}
+        <div
+          style={{
+            marginTop: 30 * u,
+            paddingTop: 24 * u,
+            borderTop: `${2 * u}px solid rgba(244,246,248,0.18)`,
+            display: 'flex',
+            flexWrap: 'wrap',
+            columnGap: 40 * u,
+            rowGap: 8 * u,
+            fontSize: 34 * u,
+            fontWeight: 700,
+          }}
+        >
+          <span>
+            <span style={{fontWeight: 500, opacity: 0.7}}>{lang === 'de' ? 'Tel.' : 'Tel.'} </span>
+            {BRAND.phone}
+          </span>
+          <span>
+            <span style={{fontWeight: 500, opacity: 0.7}}>{lang === 'de' ? 'E-Mail' : 'E-posta'} </span>
+            {BRAND.email}
+          </span>
+        </div>
+
         {/* Kleingedrucktes */}
-        <div style={{marginTop: 34 * u, fontSize: 20 * u, fontWeight: 500, lineHeight: 1.5, color: 'rgba(244,246,248,0.72)'}}>
+        <div style={{marginTop: 22 * u, fontSize: 20 * u, fontWeight: 500, lineHeight: 1.5, color: 'rgba(244,246,248,0.72)'}}>
           {p.validity}
           <br />* {tx.assumption.replace(/^[^:]+:\s*/, lang === 'de' ? 'Beispielrechnung: ' : 'Örnek hesap: ')} ({lang === 'de'
             ? `${CALC.pct} % beziehen sich nur auf den Wärmeverlust über die Fenster`

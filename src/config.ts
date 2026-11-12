@@ -8,6 +8,9 @@ export const DURATION_S = 26;
 export const BRAND = {
   name: 'MassFensterNRW',
   handle: '@massfensternrw',
+  phone: '+49 179 4755318',
+  phoneHref: '+491794755318',
+  email: 'info@massfensternrw.de',
   blue: '#31b2e8', // Logo-Hellblau (Button)
   navy: '#26437f', // Logo-Dunkelblau
 };
