@@ -1,0 +1,37 @@
+{
+  "name": "fenster-ads",
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render FensterAd-de out/fenster-ad-de.mp4 --gl=swangle",
+    "render:tr": "remotion render FensterAd-tr out/fenster-ad-tr.mp4 --gl=swangle",
+    "still": "remotion still FensterAd-de out/still.png --gl=swangle",
+    "sfx": "python3 scripts/sfx.py",
+    "voice": "node scripts/voice.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/massfenster/Video.git"
+  },
+  "bugs": {
+    "url": "https://github.com/massfenster/Video/issues"
+  },
+  "homepage": "https://github.com/massfenster/Video#readme",
+  "dependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "@remotion/cli": "^4.0.543",
+    "@remotion/google-fonts": "^4.0.543",
+    "@remotion/three": "^4.0.543",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.543",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/three": "^0.187.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
