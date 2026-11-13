@@ -1,13 +1,13 @@
 // Alle Firmendaten an EINER Stelle. Quelle: bisherige Website + Angaben des Inhabers.
-// ⚠️ Adresse bitte bestätigen: Impressum alt = Ulmenallee 19, 50999 Köln; Startseite alt = Hans-Martin-Schleyer-Str. 12, 51503 Rösrath.
+// Adresse vom Inhaber bestätigt (13.11.2026).
 
 export const FIRMA = {
   name: 'MassFensterNRW',
   inhaber: 'Burak Yılmaz',
   rechtsform: 'Einzelunternehmen',
-  strasse: 'Ulmenallee 19',
-  plz: '50999',
-  ort: 'Köln',
+  strasse: 'Hanns-Martin-Schleyer-Str. 12',
+  plz: '51503',
+  ort: 'Rösrath',
   land: 'Deutschland',
   telefon: '+49 179 4755318',
   telefonHref: 'tel:+491794755318',
