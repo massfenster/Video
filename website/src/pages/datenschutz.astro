@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import {FIRMA} from '../data/firma';
+// Grundlage: bisherige Datenschutzerklärung, angepasst an die neue Website:
+// kein Kontaktformular, keine Cookies, keine externen Schriftarten, Kontakt per E-Mail/Telefon/WhatsApp, Social-Media-Links.
+---
+
+<Base title="Datenschutz | MassFensterNRW" description="Datenschutzerklärung von MassFensterNRW." path="/datenschutz/" noindex>
+  <section class="legal">
+    <div class="wrap">
+      <h1>Datenschutzerklärung</h1>
+
+      <h2>1. Allgemeine Hinweise</h2>
+      <p>
+        Der Schutz Ihrer persönlichen Daten ist uns ein wichtiges Anliegen. Wir behandeln Ihre personenbezogenen Daten vertraulich und
+        entsprechend den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
+      </p>
+      <p>
+        Personenbezogene Daten sind Daten, mit denen Sie persönlich identifiziert werden können. In dieser Datenschutzerklärung wird erläutert,
+        welche Daten wir erheben und wofür wir sie nutzen.
+      </p>
+
+      <h2>2. Verantwortlicher für die Datenverarbeitung</h2>
+      <p>
+        {FIRMA.name}<br />
+        Inhaber: {FIRMA.inhaber}<br />
+        {FIRMA.strasse}<br />
+        {FIRMA.plz} {FIRMA.ort}<br />
+        E-Mail: <a href={`mailto:${FIRMA.email}`}>{FIRMA.email}</a><br />
+        Telefon: <a href={FIRMA.telefonHref}>{FIRMA.telefon}</a>
+      </p>
+
+      <h2>3. Server-Log-Dateien</h2>
+      <p>
+        Der Provider der Seiten erhebt und speichert automatisch Informationen in sogenannten Server-Log-Dateien, die Ihr Browser automatisch
+        an uns übermittelt. Dies sind:
+      </p>
+      <ul>
+        <li>Browsertyp und Browserversion</li>
+        <li>Verwendetes Betriebssystem</li>
+        <li>Referrer URL</li>
+        <li>Hostname des zugreifenden Rechners</li>
+        <li>Uhrzeit der Serveranfrage</li>
+        <li>IP-Adresse</li>
+      </ul>
+      <p>
+        Diese Daten werden nicht mit anderen Datenquellen zusammengeführt. Die Erfassung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1
+        lit. f DSGVO; unser berechtigtes Interesse liegt in der technisch fehlerfreien und sicheren Bereitstellung der Website.
+      </p>
+
+      <h2>4. Kontaktaufnahme per E-Mail, Telefon oder WhatsApp</h2>
+      <p>
+        Wenn Sie uns per E-Mail, Telefon oder WhatsApp kontaktieren, verarbeiten wir Ihre Angaben (z. B. Name, Telefonnummer, Nachricht) zur
+        Bearbeitung Ihrer Anfrage und für mögliche Anschlussfragen. Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO,
+        sofern Ihre Anfrage mit der Erfüllung eines Vertrags oder vorvertraglichen Maßnahmen zusammenhängt, im Übrigen auf Grundlage von
+        Art. 6 Abs. 1 lit. f DSGVO.
+      </p>
+      <p>
+        Der WhatsApp-Button auf dieser Website ist ein einfacher Link. Erst wenn Sie ihn anklicken, wird WhatsApp geöffnet. Anbieter ist die
+        WhatsApp Ireland Limited (Meta). Dabei gelten die Datenschutzbestimmungen von WhatsApp. Wenn Sie das nicht möchten, kontaktieren Sie
+        uns bitte per E-Mail oder Telefon.
+      </p>
+
+      <h2>5. Cookies, Schriftarten und Analyse</h2>
+      <p>
+        Diese Website setzt keine Cookies und nutzt keine Analyse- oder Tracking-Tools wie Google Analytics. Die verwendeten Schriftarten
+        werden direkt von unserem Server geladen; es findet keine Verbindung zu externen Schriftanbietern statt. Sollten wir in Zukunft
+        Analyse-Tools verwenden, informieren wir Sie vorab und holen – soweit erforderlich – Ihre Einwilligung ein.
+      </p>
+
+      <h2>6. Links zu sozialen Netzwerken</h2>
+      <p>
+        Auf unserer Website verlinken wir auf unsere Profile bei Instagram, Facebook und TikTok. Es handelt sich um einfache Links; beim Laden
+        unserer Website werden keine Daten an diese Netzwerke übertragen. Erst wenn Sie einen Link anklicken, gelten die
+        Datenschutzbestimmungen des jeweiligen Anbieters.
+      </p>
+
+      <h2>7. Ihre Rechte</h2>
+      <p>Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf:</p>
+      <ul>
+        <li>Auskunft über Ihre gespeicherten personenbezogenen Daten (Art. 15 DSGVO)</li>
+        <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
+        <li>Löschung Ihrer Daten (Art. 17 DSGVO)</li>
+        <li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+        <li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
+        <li>Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
+        <li>Beschwerde bei einer Datenschutz-Aufsichtsbehörde (Art. 77 DSGVO)</li>
+      </ul>
+      <p>Bitte wenden Sie sich hierzu an die oben genannte Kontaktadresse.</p>
+
+      <h2>8. Aktualisierung der Datenschutzerklärung</h2>
+      <p>
+        Diese Datenschutzerklärung wird regelmäßig aktualisiert, um den rechtlichen Anforderungen zu entsprechen oder Änderungen unserer
+        Leistungen umzusetzen.
+      </p>
+    </div>
+  </section>
+</Base>

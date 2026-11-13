@@ -2,6 +2,7 @@ import React from 'react';
 import {Composition} from 'remotion';
 import {Flyer} from './Flyer';
 import {Kampagne} from './Kampagne';
+import {SiteHero} from './SiteHero';
 import {FacebookCover, HIGHLIGHTS, HighlightCover, ProfilBild} from './Profil';
 import {DURATION_S, FPS, HEIGHT, WIDTH} from './config';
 import {FensterAd, FensterAdProps} from './FensterAd';
@@ -30,6 +31,9 @@ export const RemotionRoot: React.FC = () => (
     ))}
     {/* Winter-Kampagne Instagram/Facebook 1080 × 1350 */}
     <Composition id="Kampagne-Winter-de" component={Kampagne} durationInFrames={1} fps={FPS} width={1080} height={1350} />
+    {/* Website-Hintergründe */}
+    <Composition id="Site-Hero-Desktop" component={SiteHero} durationInFrames={1} fps={FPS} width={1920} height={1080} defaultProps={{variant: 'desktop' as const}} />
+    <Composition id="Site-Hero-Mobile" component={SiteHero} durationInFrames={1} fps={FPS} width={900} height={1400} defaultProps={{variant: 'mobile' as const}} />
     {/* Profil-Assets */}
     <Composition id="Profil-Bild" component={ProfilBild} durationInFrames={1} fps={FPS} width={1080} height={1080} defaultProps={{variant: 'full' as const}} />
     <Composition id="Profil-Bild-Mark" component={ProfilBild} durationInFrames={1} fps={FPS} width={1080} height={1080} defaultProps={{variant: 'mark' as const}} />
