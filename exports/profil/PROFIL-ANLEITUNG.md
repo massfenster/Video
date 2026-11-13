@@ -31,7 +31,7 @@ Bütün metinler Almanca; kopyala-yapıştır yapabilirsin. Karakter sınırlar�
    ```
    MassFensterNRW | Fenster nach Maß
    ```
-3. **Biyografi** (kalıcı sürüm, 140/150):
+3. **Biyografi** (kalıcı sürüm, 134/150):
    ```
    🪟 Fenster nach Maß in ganz NRW
    📏 Kostenloses Aufmaß & Angebot
