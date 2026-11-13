@@ -33,15 +33,15 @@ Bütün metinler Almanca; kopyala-yapıştır yapabilirsin. Karakter sınırlar�
    ```
 3. **Biyografi** (kalıcı sürüm, 140/150):
    ```
-   🪟 Fenster nach Maß – deutschlandweit
+   🪟 Fenster nach Maß in ganz NRW
    📏 Kostenloses Aufmaß & Angebot
    🏛️ Energieberater für BAFA/KfW-Förderung
    💬 WhatsApp: +49 179 4755318
    ```
-   **01.12.2026'ya kadar kampanya sürümü** (146/150), sonra kalıcı sürüme dön:
+   **01.12.2026'ya kadar kampanya sürümü** (140/150), sonra kalıcı sürüme dön:
    ```
    ❄️ Winter-Aktion: 35 % Rabatt auf Fenster bis 01.12.
-   🪟 Fenster nach Maß – deutschlandweit
+   🪟 Fenster nach Maß in ganz NRW
    📏 Kostenloses Aufmaß · BAFA/KfW-Beratung
    💬 WhatsApp ↓
    ```
@@ -60,14 +60,14 @@ Bütün metinler Almanca; kopyala-yapıştır yapabilirsin. Karakter sınırlar�
 
 1. **Profil resmi:** aynı profil resmi.
 2. **Kapak fotoğrafı:** `facebook-titelbild-1640x624.png`. Yazı ortada güvenli alanda durduğu için mobilde de kesilmez.
-3. **Kısa tanıtım** (95/101):
+3. **Kısa tanıtım** (89/101):
    ```
-   Fenster nach Maß – deutschlandweit. Kostenloses Aufmaß & Energieberater für BAFA/KfW-Förderung.
+   Fenster nach Maß in ganz NRW. Kostenloses Aufmaß & Energieberater für BAFA/KfW-Förderung.
    ```
 4. **Kategori:** "Fensterbauer" (yoksa "Bauunternehmen").
 5. **Ayrıntılı açıklama ("Hakkında"):**
    ```
-   MassFensterNRW liefert und montiert Fenster nach Maß – deutschlandweit.
+   MassFensterNRW liefert und montiert Fenster nach Maß in ganz NRW.
    Wir kommen zum kostenlosen Aufmaß, beraten Sie unverbindlich und erstellen Ihr persönliches Angebot.
    Auf Wunsch unterstützt Sie unser Energieberater dabei, BAFA- und KfW-Förderung zu nutzen.
 
@@ -84,9 +84,9 @@ Bütün metinler Almanca; kopyala-yapıştır yapabilirsin. Karakter sınırlar�
    ```
    MassFensterNRW · Fenster
    ```
-3. **Biyografi** (67/80):
+3. **Biyografi** (63/80):
    ```
-   Fenster nach Maß 🪟 deutschlandweit
+   Fenster nach Maß 🪟 in ganz NRW
    Kostenloses Aufmaß · WhatsApp ↓
    ```
 4. **Web sitesi alanı:** WhatsApp linki (yukarıdaki). Bu alan açık değilse işletme hesabı ayarlarından iletişim e-postasını ekle.

@@ -19,7 +19,7 @@ export const ProfilBild: React.FC<{variant: 'full' | 'mark'}> = ({variant}) => (
   </AbsoluteFill>
 );
 
-// ---------- Facebook-Titelbild 1640 × 624 (zeitlos, ohne befristete Aktion) ----------
+// ---------- Facebook-Titelbild 1640 × 624 (zeitlos, Region NRW, ohne befristete Aktion) ----------
 // Mobil wird links/rechts beschnitten -> Text bleibt in der Mitte (sicherer Bereich ca. 1200 px breit)
 export const FacebookCover: React.FC = () => {
   const {width, height} = useVideoConfig();
@@ -36,7 +36,7 @@ export const FacebookCover: React.FC = () => {
       <div style={{position: 'absolute', left: 830, right: 170, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
         <div style={{fontSize: 30, fontWeight: 700, letterSpacing: 5, color: C.amber}}>MASSFENSTERNRW</div>
         <div style={{fontSize: 60, fontWeight: 700, lineHeight: 1.08, marginTop: 10}}>Fenster nach Maß</div>
-        <div style={{fontSize: 60, fontWeight: 700, lineHeight: 1.08, color: '#2dafdc'}}>deutschlandweit</div>
+        <div style={{fontSize: 60, fontWeight: 700, lineHeight: 1.08, color: '#2dafdc'}}>in ganz NRW</div>
         <div style={{fontSize: 25, fontWeight: 500, marginTop: 20, opacity: 0.9, lineHeight: 1.45}}>
           Kostenloses Aufmaß & unverbindliches Angebot
           <br />

@@ -33,7 +33,7 @@ Numara sadece düz metin olarak duruyor; mobilde dokununca arama başlamıyor.
 ### 3. Açılış bölümü (hero) teklif ve buton içermiyor
 Şu an: daktilo efektiyle "FENSTER TÜR ROLLADEN" ve İngilizce bir "Show Me More" butonu var.
 **Yeni metin önerisi:**
-- **H1:** `Fenster nach Maß – deutschlandweit`
+- **H1:** `Fenster nach Maß in ganz NRW`
 - Alt satır: `Kostenloses Aufmaß, unverbindliches Angebot und Energieberater für BAFA- und KfW-Förderung.`
 - Buton 1 (turkuaz): `Kostenloses Aufmaß anfragen` → WhatsApp linki
 - Buton 2 (çerçeveli): `Jetzt anrufen` → `tel:+491794755318`
@@ -73,16 +73,16 @@ Not: Blog yazıları **2019** tarihli görünüyor; site bakımsız izlenimi ver
 ## 🟡 Öncelik 3: Google'da bulunma (SEO)
 
 All in One SEO → Ana sayfa:
-- **SEO başlığı** (51/60):
+- **SEO başlığı** (39/60):
   ```
-  Fenster nach Maß – deutschlandweit | MassFensterNRW
+  Fenster nach Maß in NRW | MassFensterNRW
   ```
 - **Meta açıklama** (139/155). Şu anki otomatik metin anlamsız ("FENSTER TÜR ROLLADEN MASSFENSTERNRW Show Me More…"):
   ```
   Fenster, Türen & Rollläden nach Maß: kostenloses Aufmaß, unverbindliches Angebot und Energieberater für BAFA/KfW-Förderung. Jetzt anfragen!
   ```
 - **Alternatif metinler:** Her görsele kısa bir açıklama ekle, örn. `Monteur justiert neues Kunststofffenster`.
-- **Bölge tutarlılığı:** Site "in NRW" diyor, sosyal medya artık "deutschlandweit". Birine karar verip ikisini eşitle.
+- **Bölge:** Her yerde **NRW** kullanılıyor (site, sosyal medya, reklamlar). Hizmet verdiğin şehirleri (örn. Rösrath, Köln, Bergisch Gladbach, Leverkusen …) "Einsatzgebiet" başlıklı bir bölümde sırala; yerel aramalarda bulunmanı kolaylaştırır.
 - **Google Business Profile:** Rösrath adresiyle ücretsiz işletme profili aç ya da mevcut profili güncelle (harita, yorumlar, telefon). Yerel aramada en çok etkiyi bu yapar.
 
 ---
